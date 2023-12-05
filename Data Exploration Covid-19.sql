@@ -1,7 +1,7 @@
 -- Select Data that we are going to be starting with
 
 Select Location, date, total_cases, new_cases, total_deaths, population
-From CovidDeath
+From CovidDeaths
 Where continent is not null 
 order by 1,2
 
@@ -18,13 +18,19 @@ order by 1,2
 -- Shows what percentage of population infected with Covid
 
 Select Location, date, Population, total_cases,  (total_cases/population)*100 as PercentPopulationInfected
-From PortfolioProject..CovidDeaths
---Where location like '%states%'
+From CovidDeaths
 order by 1,2
 
   -- Countries with Highest Infection Rate compared to Population
 
 Select Location, Population, MAX(total_cases) as HighestInfectionCount,  Max((total_cases/population))*100 as PercentPopulationInfected
-From CovidDeath
+From CovidDeaths
 Group by Location, Population
 order by PercentPopulationInfected desc
+
+  -- Countries with Highest Death Count per Population
+
+Select Location, MAX(Total_deaths) as TotalDeathCount, Max((Total_deaths/population))*100 as PercentPopulationDeaths
+From CovidDeaths
+Group by Location
+order by TotalDeathCount desc
