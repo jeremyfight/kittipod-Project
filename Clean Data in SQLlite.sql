@@ -1,7 +1,12 @@
+--Cleaning Data in SQL Queries
+Select *
+From PortfolioProject.dbo.NashvilleHousing
+
 --Populate Property Address data clean null and update data
+
 Select a.ParcelID, a.PropertyAddress, b.ParcelID, 
-	   b.PropertyAddress, 
-	   ifNULL(a.PropertyAddress,b.PropertyAddress)
+       b.PropertyAddress, 
+       ifNULL(a.PropertyAddress,b.PropertyAddress)
 From Nashville a
 JOIN Nashville b
 	on a.ParcelID = b.ParcelID
@@ -26,8 +31,9 @@ substr(PropertyAddress, 1, instr(PropertyAddress, ',') -1),
 From Nashville
 
 -- Change Y and N to Yes and No in "Sold as Vacant" field
+
 Select Distinct(SoldAsVacant), 	   
-	   Count(SoldAsVacant)
+       Count(SoldAsVacant)
 From Nashville
 Group by SoldAsVacant
 order by 2
@@ -39,14 +45,16 @@ Select SoldAsVacant,
 	   END
 From Nashville
 
---uddate SoldAsVacant
+--Update SoldAsVacant
+
 Update NashvilleHousing
 SET SoldAsVacant = CASE When SoldAsVacant = 'Y' THEN 'Yes'
 	   When SoldAsVacant = 'N' THEN 'No'
 	   ELSE SoldAsVacant
 	   END
 
--- Remove Duplicates
+-- Find Duplicates Data
+
 WITH DuplicatesETC AS(
 Select  *,
 	row_number() OVER (
@@ -64,4 +72,4 @@ Select *
 from DuplicatesETC
 WHERE Duplicates > 1
 
---
+
