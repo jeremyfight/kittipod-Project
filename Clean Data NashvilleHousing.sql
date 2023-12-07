@@ -1,6 +1,6 @@
 --Cleaning Data in SQL Queries
 Select *
-From PortfolioProject.dbo.NashvilleHousing
+From NashvilleHousing
 
 --Populate Property Address data clean null and update data
 
