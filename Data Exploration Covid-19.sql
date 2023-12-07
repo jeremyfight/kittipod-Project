@@ -23,14 +23,42 @@ order by 1,2
 
   -- Countries with Highest Infection Rate compared to Population
 
-Select Location, Population, MAX(total_cases) as HighestInfectionCount,  Max((total_cases/population))*100 as PercentPopulationInfected
+Select Location, Population, MAX(total_cases) as HighestInfectionCount,  Max(total_cases)/population*100 as PercentPopulationInfected
 From CovidDeaths
 Group by Location, Population
 order by PercentPopulationInfected desc
 
   -- Countries with Highest Death Count per Population
 
-Select Location, MAX(Total_deaths) as TotalDeathCount, Max((Total_deaths/population))*100 as PercentPopulationDeaths
+Select Location, MAX(total_deaths) as TotalDeathCount, Max(total_deaths)/population*100 as PercentPopulationDeaths
 From CovidDeaths
 Group by Location
 order by TotalDeathCount desc
+
+  -- Total Population vs Vaccinations
+
+Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
+       SUM(vac.new_vaccinations) OVER (Partition by dea.Location Order by dea.location, dea.Date) as RollingPeopleVaccinated
+From CovidDeaths dea
+Join CovidVaccinations vac
+	On dea.location = vac.location
+	and dea.date = vac.date
+where dea.continent is not null 
+order by 2,3
+
+  -- Using CTE to perform Calculation Percentage of Population that has recieved at least one Covid Vaccine
+  
+  With PopvsVac (Continent, Location, Date, Population, New_Vaccinations, RollingPeopleVaccinated)
+as
+(
+Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
+	   SUM(vac.new_vaccinations) OVER (Partition by dea.Location Order by dea.location, dea.Date) as RollingPeopleVaccinated
+
+From CovidDeaths dea
+Join CovidVaccinations vac
+	On dea.location = vac.location
+	and dea.date = vac.date
+where dea.continent is not null 
+)
+Select *, (RollingPeopleVaccinated/Population)*100
+From PopvsVac
